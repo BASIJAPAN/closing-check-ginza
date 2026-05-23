@@ -317,11 +317,16 @@ window.finishCheck = async () => {
   if (state.busy) return;
   state.busy = true;
   const now = new Date();
-  await push(ref(db, DB_PATH), { name: state.name, completedAt: now.toISOString(), memo: state.memo.trim() });
-  state.doneAt = now;
-  state.busy = false;
-  state.screen = "done";
-  render();
+  try {
+    await push(ref(db, DB_PATH), { name: state.name, completedAt: now.toISOString(), memo: state.memo.trim() });
+    state.doneAt = now;
+    state.busy = false;
+    state.screen = "done";
+    render();
+  } catch(e) {
+    state.busy = false;
+    alert("Firebase書き込みエラー: " + e.message);
+  }
 };
 
 window.toggleHistory = () => {
